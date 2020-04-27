@@ -2,7 +2,7 @@
 
 This work was done for Data Mining lecture. The instructor's expectation was the implementation of the standard version of KNN for a data set chosen by the students.
 
-I wanted it to work for each dataset, have more features, and a weighted version as an option.I tried to write only to be dependent on NumPy and Pandas.
+I wanted it to work for any dataset, have more features, and a weighted version as an option.I tried to write only to be dependent on NumPy and Pandas.
 
 I wanted to write and put it because I couldn't find anything like this on GitHub.
 
