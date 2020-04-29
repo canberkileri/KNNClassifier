@@ -253,7 +253,7 @@ class KNNClassifier():
             else:
                 assert False,"The metric you entered does not exist. Please read the method description."
 
-        #Creating and filling matrices to keep distance values ââand index information.
+        #Creating and filling matrices to keep distances and indexes information.
         sorted_distance_index = np.zeros((test_X.shape[0],self.K))
         sorted_distance_dist = np.zeros((test_X.shape[0],self.K))
         for z in range(distance_matrix.shape[1]):
