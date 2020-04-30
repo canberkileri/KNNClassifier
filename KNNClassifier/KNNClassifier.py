@@ -166,18 +166,22 @@ class KNNClassifier():
         
         Notes: All your data except the target feature must be of int, float or bool type.
    
-        """
-        
+        """      
         
         self.train_X = train_X
         self.train_Y = train_Y
-        self.train_X.index, self.train_Y.index = range(train_X.shape[0]),range(train_Y.shape[0])
+        
+        if type(self.train_X) == pd.core.frame.DataFrame:        
+            self.train_X.index = range(train_X.shape[0])
+        
+        if type(self.train_Y) == pd.core.frame.DataFrame or type(self.train_Y) == pd.core.series.Series:
+            self.train_Y.index = range(train_Y.shape[0])
         
         assert pd.api.types.is_numeric_dtype(self.train_X.all()), "There are non-numerical variables in your data. All your data must be of int, float or bool type."
         assert self.K < self.train_X.shape[0],"Your training set cannot be less than K. Please redefine the class."
-        assert type(self.train_X) == pd.core.frame.DataFrame, "Please use type of DataFrame."
+        assert type(self.train_X) == pd.core.frame.DataFrame or type(self.train_X) == np.ndarray , "Please use type of DataFrame or NumPy Array."
         
-        
+    
     def predict(self, test_X):
         """
         Describe: It looks at your training set that you introduced with the Fit method and predicts the labels of the test set you gave.
@@ -192,25 +196,26 @@ class KNNClassifier():
     
         """
         
-        assert type(test_X) == pd.core.frame.DataFrame, "Please use DataFrame data type."
+        assert type(test_X) == pd.core.frame.DataFrame or type(self.train_X) == np.ndarray, "Please use DataFrame data type or NumPy Array."
         assert pd.api.types.is_numeric_dtype(test_X.all()), "There are non-numerical variables in your data. All your data must be of int, float or bool type."
         
-        test_X.index = range(test_X.shape[0])
+        if type(test_X) == pd.core.frame.DataFrame: 
+            test_X.index = range(test_X.shape[0])
         
-        #Epsilon is a very small number to avoid dividing by zero
+        #Epsilon is a very small number to avoid dividing by zero.
         epsilon = 10**-12
         
         
         #Scaling Operations
         if self.scale == "min-max":
-            self.train_X = (self.train_X - self.train_X.min()) / (self.train_X.max() - self.train_X.min() + epsilon)
-            test_X = (test_X - test_X.min()) / (test_X.max() - test_X.min() + epsilon)
+            self.train_X = (self.train_X - self.train_X.min(axis=0)) / (self.train_X.max(axis=0) - self.train_X.min(axis=0) + epsilon)
+            test_X = (test_X - test_X.min(axis=0)) / (test_X.max(axis=0) - test_X.min(axis=0) + epsilon)
         elif self.scale == "standardization" or self.scale == "z-score":
-            self.train_X = (self.train_X - self.train_X.mean()) / (self.train_X.std() + epsilon)
-            test_X = (test_X - test_X.mean()) / (test_X.std() + epsilon)
+            self.train_X = (self.train_X - self.train_X.mean(axis=0)) / (self.train_X.std(axis=0) + epsilon)
+            test_X = (test_X - test_X.mean(axis=0)) / (test_X.std(axis=0) + epsilon)
         elif self.scale == "mean-normalization":
-            self.train_X = (self.train_X - self.train_X.mean()) / (self.train_X.max() - self.train_X.min() + epsilon())
-            test_X = (test_X - test_X.mean()) / (test_X.max() - test_X.min() + epsilon)
+            self.train_X = (self.train_X - self.train_X.mean(axis=0)) / (self.train_X.max(axis=0) - self.train_X.min(axis=0) + epsilon())
+            test_X = (test_X - test_X.mean(axis=0)) / (test_X.max(axis=0) - test_X.min(axis=0) + epsilon)
 
         #Choice of the function to be applied according to the selected KNN method.
         if self.weighting == "uniform":
@@ -241,8 +246,12 @@ class KNNClassifier():
         #The difference of each training record with the entire test sample table is taken.
         #Then, various operations are applied on it according to the selection.
         distance_matrix = np.zeros((self.train_X.shape[0],test_X.shape[0]))
-        self.train_X = self.train_X.to_numpy()
-        test_X = test_X.to_numpy()
+        
+        if type(self.train_X) == pd.core.frame.DataFrame:
+            self.train_X = self.train_X.to_numpy()
+        elif type(test_X) == pd.core.frame.DataFrame:
+            test_X = test_X.to_numpy()
+                        
         for u in range(self.train_X.shape[0]):
             if self.distance_metric == "minkowski":                 
                 distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)**self.p,axis=1)**(1/self.p)
@@ -254,20 +263,19 @@ class KNNClassifier():
                 distance_matrix[u, :] = np.max(np.abs(self.train_X[u] - test_X),axis=1)
             else:
                 assert False,"The metric you entered does not exist. Please read the method description."
-
-        #Creating and filling matrices to keep distances and indexes information.
-        sorted_distance_index = np.zeros((test_X.shape[0],self.K))
+        
+        #Creating and filling matrices to keep distances and indexes information.
+        sorted_distance_index = np.zeros((test_X.shape[0],self.K), dtype=int)
         sorted_distance_dist = np.zeros((test_X.shape[0],self.K))
         for z in range(distance_matrix.shape[1]):
             
             dist_argsort = distance_matrix.T[z].argsort()[:self.K]
             sorted_distance_index[z] = dist_argsort
             sorted_distance_dist[z] = w(distance_matrix.T[z][dist_argsort])
-                
-        
+                       
               
         pred_Y = np.zeros((test_X.shape[0])) 
-        if type(self.train_Y[0]) == str:
+        if type(self.train_Y[0]) == np.str_ or type(self.train_Y[0]) == str:
             pred_Y = pred_Y.astype('str')      
         
         
@@ -277,6 +285,8 @@ class KNNClassifier():
                 pred_Y[b] =  mode(self.train_Y[sorted_distance_index[b]])
 
         else:
+            if type(self.train_Y) == np.ndarray:
+                self.train_Y = pd.Series(self.train_Y)
             sum_of_classes = []
             for k in range(test_X.shape[0]):
                 #labels
@@ -321,8 +331,14 @@ class KNNClassifier():
         
         assert ((type(true_Y) == np.ndarray or
                 type(true_Y) == pd.core.series.Series)
-        and (type(pred_Y) == np.ndarray or
+        or (type(pred_Y) == np.ndarray or
                 type(pred_Y) == pd.core.series.Series)), "You must enter Pandas Series, Numpy Array, etc."
+        
+        
+        if type(true_Y) == np.ndarray:
+            true_Y = pd.Series(true_Y)
+        if type(pred_Y) == np.ndarray:
+            pred_Y = pd.Series(pred_Y)
         
         true_Y.index = range(true_Y.shape[0])
         
