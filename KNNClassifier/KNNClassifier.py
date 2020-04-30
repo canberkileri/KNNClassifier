@@ -241,15 +241,17 @@ class KNNClassifier():
         #The difference of each training record with the entire test sample table is taken.
         #Then, various operations are applied on it according to the selection.
         distance_matrix = np.zeros((self.train_X.shape[0],test_X.shape[0]))
+        self.train_X = self.train_X.to_numpy()
+        test_X = test_X.to_numpy()
         for u in range(self.train_X.shape[0]):
             if self.distance_metric == "minkowski":                 
-                distance_matrix[u, :] = np.sum(np.abs(self.train_X.loc[u] - test_X)**self.p,axis=1)**(1/self.p)
+                distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)**self.p,axis=1)**(1/self.p)
             elif self.distance_metric == "canberra":
-                distance_matrix[u, :] = np.sum(np.abs(self.train_X.loc[u] - test_X)/(np.abs(self.train_X.loc[u])+np.abs(test_X)),axis=1)
+                distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/(np.abs(self.train_X[u])+np.abs(test_X)),axis=1)
             elif self.distance_metric == "braycurtis":
-                distance_matrix[u, :] = np.sum(np.abs(self.train_X.loc[u] - test_X)/(np.sum(np.abs(self.train_X.loc[u]))+np.abs(test_X)),axis=1)
+                distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/(np.sum(np.abs(self.train_X[u]))+np.abs(test_X)),axis=1)
             elif self.distance_metric == "chebyshev":
-                distance_matrix[u, :] = np.max(np.abs(self.train_X.loc[u] - test_X),axis=1)
+                distance_matrix[u, :] = np.max(np.abs(self.train_X[u] - test_X),axis=1)
             else:
                 assert False,"The metric you entered does not exist. Please read the method description."
 
