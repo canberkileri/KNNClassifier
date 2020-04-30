@@ -264,7 +264,7 @@ class KNNClassifier():
             else:
                 assert False,"The metric you entered does not exist. Please read the method description."
         
-        #Creating and filling matrices to keep distances and indexes information.
+        #Creating and filling matrices to keep distances and indexes information.
         sorted_distance_index = np.zeros((test_X.shape[0],self.K), dtype=int)
         sorted_distance_dist = np.zeros((test_X.shape[0],self.K))
         for z in range(distance_matrix.shape[1]):
@@ -391,8 +391,8 @@ class KNNClassifier():
             precision_list.append(precision)
         
             f1_list.append(f1)
-                        
-            all_information+= (str(i) + "    " +
+            name = conf_matrix.index[:-1].values[i]      
+            all_information+= (str(name) + "    " +
                                str(round(precision,4)) + "    " +
                                    str(round(recall,4)) + "    " +
                                        str(round(f1,4)) +"\n")
