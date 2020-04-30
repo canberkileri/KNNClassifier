@@ -249,7 +249,7 @@ class KNNClassifier():
         
         if type(self.train_X) == pd.core.frame.DataFrame:
             self.train_X = self.train_X.to_numpy()
-        elif type(test_X) == pd.core.frame.DataFrame:
+        if type(test_X) == pd.core.frame.DataFrame:
             test_X = test_X.to_numpy()
                         
         for u in range(self.train_X.shape[0]):
