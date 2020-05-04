@@ -115,8 +115,7 @@ def KFold(knn, X, Y, cv = 5, random_state = None):
         X, Y = zip(*Z)
         X = np.array(X)
         Y = np.array(Y)
-    elif type(X) == pd.core.frame.DataFrame and (type(Y) == pd.core.frame.DataFrame
-                                                 or type(Y) == pd.core.series.Series):
+    elif type(X) == pd.core.frame.DataFrame and type(Y) == pd.core.series.Series:
         X = X.sample(frac=1, random_state=random_state)
         Y = Y.sample(frac=1, random_state=random_state)
     else:
@@ -131,7 +130,7 @@ def KFold(knn, X, Y, cv = 5, random_state = None):
         test_X = X[(i*size):((i+1)*size)]
         test_Y = Y[(i*size):((i+1)*size)]
         
-        if type(X) == pd.core.frame.DataFrame and type(Y) == pd.core.frame.DataFrame: 
+        if type(X) == pd.core.frame.DataFrame and type(Y) == pd.core.series.Series:
             train_X = pd.concat([X[:(i*size)], X[((i+1)*size):]])
             train_Y = pd.concat([Y[:(i*size)], Y[((i+1)*size):]])
         elif type(X) == np.ndarray and type(Y) == np.ndarray:
