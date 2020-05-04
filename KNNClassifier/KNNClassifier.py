@@ -104,9 +104,25 @@ def KFold(knn, X, Y, cv = 5, random_state = None):
     """
     
     assert type(knn) == KNNClassifier, "Please use the KNNClassifier you have imported."    
+    assert type(X) == pd.core.frame.DataFrame or type(X) == np.ndarray , "Please use type of DataFrame or NumPy Array."
+    assert type(Y) == pd.core.series.Series or type(Y) == np.ndarray , "Please use type of Series or NumPy Array."
     
-    X = X.sample(frac=1, random_state=random_state)
-    Y = Y.sample(frac=1, random_state=random_state)
+    
+    
+    if type(X) == np.ndarray and type(Y) == np.ndarray:
+        Z = list(zip(X,Y))
+        np.random.shuffle(Z)
+        X, Y = zip(*Z)
+        X = np.array(X)
+        Y = np.array(Y)
+    elif type(X) == pd.core.frame.DataFrame and (type(Y) == pd.core.frame.DataFrame
+                                                 or type(Y) == pd.core.series.Series):
+        X = X.sample(frac=1, random_state=random_state)
+        Y = Y.sample(frac=1, random_state=random_state)
+    else:
+        assert False,"Please check the values you entered."
+        
+              
     
     size = X.shape[0]//cv
     acc_list = []
@@ -114,8 +130,14 @@ def KFold(knn, X, Y, cv = 5, random_state = None):
     for i in range(cv):
         test_X = X[(i*size):((i+1)*size)]
         test_Y = Y[(i*size):((i+1)*size)]
-        train_X = pd.concat([X[:(i*size)], X[((i+1)*size):]])
-        train_Y = pd.concat([Y[:(i*size)], Y[((i+1)*size):]])
+        
+        if type(X) == pd.core.frame.DataFrame and type(Y) == pd.core.frame.DataFrame: 
+            train_X = pd.concat([X[:(i*size)], X[((i+1)*size):]])
+            train_Y = pd.concat([Y[:(i*size)], Y[((i+1)*size):]])
+        elif type(X) == np.ndarray and type(Y) == np.ndarray:
+            train_X = np.concatenate((X[:(i*size)], X[((i+1)*size):]))
+            train_Y = np.concatenate((Y[:(i*size)], Y[((i+1)*size):]))
+            
         knn.fit(train_X,train_Y)
         pred_Y = knn.predict(test_X)   
         acc, conf_matrix = knn.evaluation(test_Y,pred_Y)
