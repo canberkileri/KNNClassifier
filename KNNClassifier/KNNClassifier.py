@@ -167,7 +167,10 @@ class KNNClassifier():
         Notes: All your data except the target feature must be of int, float or bool type.
    
         """      
-        
+        assert type(train_X) == pd.core.frame.DataFrame or type(train_X) == np.ndarray, "Please use type of DataFrame or NumPy Array."
+        assert pd.api.types.is_numeric_dtype(train_X.all()), "There are non-numerical variables in your data. All your data must be of int, float or bool type."
+        assert self.K < train_X.shape[0],"Your training set cannot be less than K. Please redefine the class."
+		
         self.train_X = train_X
         self.train_Y = train_Y
         
@@ -176,11 +179,7 @@ class KNNClassifier():
         
         if type(self.train_Y) == pd.core.frame.DataFrame or type(self.train_Y) == pd.core.series.Series:
             self.train_Y.index = range(train_Y.shape[0])
-        
-        assert pd.api.types.is_numeric_dtype(self.train_X.all()), "There are non-numerical variables in your data. All your data must be of int, float or bool type."
-        assert self.K < self.train_X.shape[0],"Your training set cannot be less than K. Please redefine the class."
-        assert type(self.train_X) == pd.core.frame.DataFrame or type(self.train_X) == np.ndarray , "Please use type of DataFrame or NumPy Array."
-        
+    
     
     def predict(self, test_X):
         """
