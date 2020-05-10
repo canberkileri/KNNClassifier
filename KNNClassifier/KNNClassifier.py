@@ -278,7 +278,7 @@ class KNNClassifier():
             elif self.distance_metric == "canberra":
                 distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/(np.abs(self.train_X[u])+np.abs(test_X)),axis=1)
             elif self.distance_metric == "braycurtis":
-                distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/(np.sum(np.abs(self.train_X[u]))+np.abs(test_X)),axis=1)
+				distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X),axis=1)/(np.sum(np.abs(self.train_X[u]))+np.sum(np.abs(test_X),axis=1))
             elif self.distance_metric == "chebyshev":
                 distance_matrix[u, :] = np.max(np.abs(self.train_X[u] - test_X),axis=1)
             else:
