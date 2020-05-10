@@ -276,7 +276,10 @@ class KNNClassifier():
             if self.distance_metric == "minkowski":                 
                 distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)**self.p,axis=1)**(1/self.p)
             elif self.distance_metric == "canberra":
-                distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/(np.abs(self.train_X[u])+np.abs(test_X)),axis=1)
+                #The number 10^-12 was assigned to places where it was 0 to avoid the division by zero error.
+                avoidZero = np.abs(self.train_X[u])+np.abs(test_X)
+                avoidZero[avoidZero == 0] = 10**-12
+                distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/avoidZero,axis=1)
             elif self.distance_metric == "braycurtis":
 				distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X),axis=1)/(np.sum(np.abs(self.train_X[u]))+np.sum(np.abs(test_X),axis=1))
             elif self.distance_metric == "chebyshev":
