@@ -95,7 +95,7 @@ def KFold(knn, X, Y, cv = 5, random_state = None):
         
         cv -- Number of splits.
         
-        random_satate -- You should use it if you don't want a different partitioning each time. This option is often 
+        random_state -- You should use it if you don't want a different partitioning each time. This option is often 
         used to prevent variation during testing. Must be convertible to 32 bit unsigned integers.
     
     Return: Mean of accuracy.
