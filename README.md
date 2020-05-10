@@ -10,8 +10,6 @@ I took the Sklearn library as an example. I did not intend to coding anything as
 
 I wanted students who do research like me to find understandable codes and benefit them.
 
-I hope to make additions to BallTree, KDTree or PCA hereafter.
-
 Contents:
 
 - KNNClassifier class, include fit, predict, evaluation and classification_report methods.
@@ -23,3 +21,5 @@ Contents:
 - mode function.
 
 Detailed explanations are in the document.
+
+I hope to make additions to BallTree, KDTree, PCA or Regressor version hereafter.
