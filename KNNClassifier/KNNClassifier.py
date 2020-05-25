@@ -281,7 +281,7 @@ class KNNClassifier():
                 avoidZero[avoidZero == 0] = 10**-12
                 distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X)/avoidZero,axis=1)
             elif self.distance_metric == "braycurtis":
-				distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X),axis=1)/(np.sum(np.abs(self.train_X[u]))+np.sum(np.abs(test_X),axis=1))
+		distance_matrix[u, :] = np.sum(np.abs(self.train_X[u] - test_X),axis=1)/(np.sum(np.abs(self.train_X[u]))+np.sum(np.abs(test_X),axis=1))
             elif self.distance_metric == "chebyshev":
                 distance_matrix[u, :] = np.max(np.abs(self.train_X[u] - test_X),axis=1)
             else:
